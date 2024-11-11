@@ -2,7 +2,7 @@ import User from '../models/user.model';
 import { IUser } from '../interfaces/user.interface';
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-// import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ dotenv.config();
 
 class UserService {
 
-  // private jwtSecret = process.env.JWT_SECRET;
+  private jwtSecret = process.env.JWT_SECRET;
 
   public registerUser= async (body:IUser): Promise<any> =>{
     // Step 1: Check if a user already exists by email
@@ -48,8 +48,13 @@ public loginUser = async (body: { email: string; password: string }): Promise<an
       throw new Error('Invalid email or password');
     }
 
-return 
+    // Generate a JWT token
+    const token = jwt.sign( { userId: user._id, email: user.email },this.jwtSecret,{ expiresIn: '1h' } );
+
+    return { message: 'Login successful', token };
 };
+
+
 
 
 }

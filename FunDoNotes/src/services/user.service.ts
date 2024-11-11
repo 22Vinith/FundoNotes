@@ -2,7 +2,7 @@ import User from '../models/user.model';
 import { IUser } from '../interfaces/user.interface';
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -26,6 +26,29 @@ class UserService {
     // Step 3: Return the newly created user object
     return newUser;
   }
+
+// Log in user
+public loginUser = async (body: { email: string; password: string }): Promise<any> => {
+  const { email, password } = body;
+
+  // Check if user exists
+  const user = await User.findOne({email} );//Internally the return is made, If a matching user is found, User.findOne "returns an object with that user’s data".
+  if (!user) {  //This is entered only if the above is false
+    console.log("hello")      
+    throw new Error('Invalid email or password');
+  }
+
+    // Correct password verification using bcrypt(Authentication)
+    const isPasswordValid = await bcrypt.compare(password, user.password);// Even this has the return stmt internally for true, the "user" in the user.password is the one which is mentioned while retreving the email which return the entire object of that matched email.
+    if (!isPasswordValid) { //Same here 
+      console.log("Incorrect password");
+      throw new Error('Invalid email or password');
+    }
+
+return 
+};
+
+
 }
 
 export default UserService;

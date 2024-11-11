@@ -37,7 +37,19 @@ class UserController {
 
 //---------------------------------------------------------------------------------------------------
 
- 
+   // Log in user
+   public loginUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+      const user= await this.userService.loginUser(req.body);
+      return res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: user, // Return the user and token
+        message: 'Login successful'
+      });
+    } catch (error) {
+      res.status(HttpStatus.UNAUTHORIZED).send(error.message);
+    }
+};
 
 //-------------------------------------------------------------------------------------------------------
 

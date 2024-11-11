@@ -19,6 +19,8 @@ class UserRoutes {
        // route to create a new user
        this.router.post( '/login',  this.UserValidator.loginvalidator, this.UserController.loginUser);
 
+   
+
   };
 
   public getRoutes = (): IRouter => {

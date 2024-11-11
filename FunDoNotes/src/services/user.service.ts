@@ -19,7 +19,10 @@ class UserService {
       throw new Error('User with this email already exists.');
     }
       
-
+    let saltRounds=10
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync(body.password, salt);
+    body.password=hash
     // Step 2: Add the new user to the in-memory "database"
     const newUser = await User.create(body);
 

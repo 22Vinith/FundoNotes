@@ -30,6 +30,17 @@ class NoteController {
     }
   };
   
+  // Get a single note by ID
+  public getNoteById = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const UserId= res.locals.user.userId;
+      const note = await this.noteService.getNoteById(req.params.id, UserId );
+      res.status(200).json(note);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
 }
 
 export default NoteController;

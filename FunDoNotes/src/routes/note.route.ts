@@ -19,7 +19,10 @@ class noteRoutes {
 
   // Route to get all Notes of a user
   this.router.get('/', userAuth, this.NoteController.getAllNotes);
-  
+
+ // Route to get a note by its ID
+ this.router.get('/:id', userAuth, this.NoteController.getNoteById);
+
   };
 
   public getRoutes = (): IRouter => {

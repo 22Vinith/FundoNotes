@@ -12,6 +12,12 @@ class NoteService {
         return await NoteModel.find({ createdBy: userId });
       }
 
+        // Get note by ID
+  public async getNoteById(noteId: string, userId: string): Promise<INote | null> {
+    return await NoteModel.findOne({ _id: noteId, createdBy: userId });
+  }
+
+  
 }
 
 export default NoteService;

@@ -14,6 +14,7 @@ import { Request, Response, NextFunction } from 'express';
 
 const jwtSecret = process.env.JWT_SECRET;
 
+
 export const userAuth = async (
   req: Request,
   res: Response,
@@ -36,3 +37,5 @@ export const userAuth = async (
     next(error);
   }
 };
+
+

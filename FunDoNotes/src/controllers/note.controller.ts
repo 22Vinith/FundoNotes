@@ -74,6 +74,17 @@ class NoteController {
     }
   };
 
+    // Permanently delete a note
+  public deleteNoteForever = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const UserId= res.locals.user.userId;
+      await this.noteService.deleteNoteForever(req.params.id, UserId);
+      res.status(204).json({message: "deleted permanently"});
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
 }
 
 export default NoteController;

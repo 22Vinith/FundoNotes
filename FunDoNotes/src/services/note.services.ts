@@ -42,6 +42,11 @@ class NoteService {
     return note;
   }
 
+    // Permanently delete a note
+  public async deleteNoteForever(noteId: string, userId: string): Promise<void> {
+    await NoteModel.findOneAndDelete({ _id: noteId, createdBy: userId });
+  }
+
 }
 
 export default NoteService;

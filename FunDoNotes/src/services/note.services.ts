@@ -7,6 +7,11 @@ class NoteService {
     return await NoteModel.create({ ...noteData, createdBy: userId });
   }
 
+      // Get all notes
+      public async getAllNotes(userId: string): Promise<INote[]> {
+        return await NoteModel.find({ createdBy: userId });
+      }
+
 }
 
 export default NoteService;

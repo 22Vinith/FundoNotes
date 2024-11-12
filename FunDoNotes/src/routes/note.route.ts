@@ -17,7 +17,9 @@ class noteRoutes {
    // Route to create a new note
    this.router.post('/create', userAuth, this.NoteValidator.validateNote, this.NoteController.createNote);
 
-
+  // Route to get all Notes of a user
+  this.router.get('/', userAuth, this.NoteController.getAllNotes);
+  
   };
 
   public getRoutes = (): IRouter => {

@@ -18,6 +18,17 @@ class NoteController {
     }
   };
 
+   // Get all notes
+   public getAllNotes = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const UserId= res.locals.user.userId;
+       
+      const notes = await this.noteService.getAllNotes(UserId);
+      res.status(200).json(notes);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
   
 }
 

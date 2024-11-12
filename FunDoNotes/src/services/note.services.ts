@@ -7,7 +7,6 @@ class NoteService {
     return await NoteModel.create({ ...noteData, createdBy: userId });
   }
 
-  
 }
 
 export default NoteService;

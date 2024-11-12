@@ -18,8 +18,6 @@ class noteRoutes {
    this.router.post('/create', userAuth, this.NoteValidator.validateNote, this.NoteController.createNote);
 
 
-
-
   };
 
   public getRoutes = (): IRouter => {

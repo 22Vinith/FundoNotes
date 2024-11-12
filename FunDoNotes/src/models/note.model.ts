@@ -1,6 +1,6 @@
 import Mongoose, {Schema, model } from 'mongoose';
 import { INote } from '../interfaces/note.interface';
-import { boolean } from '@hapi/joi';
+import { boolean, required } from '@hapi/joi';
 
 const noteSchema = new Schema(
     {
@@ -22,7 +22,8 @@ const noteSchema = new Schema(
       },
       createdBy: {
         type: Mongoose.Schema.Types.ObjectId,
-       ref: 'User'
+       ref: 'User',
+       required:true
       }
     },
     {

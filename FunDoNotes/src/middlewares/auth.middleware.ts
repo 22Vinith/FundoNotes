@@ -18,8 +18,8 @@ const jwtSecret = process.env.JWT_SECRET;
 export const userAuth = async (
   req: Request,
   res: Response,
-  next: NextFunction
-): Promise<void> => {
+  next: NextFunction)
+: Promise<void> => {
   try {
     let bearerToken = req.header('Authorization');
     if (!bearerToken)
@@ -29,8 +29,10 @@ export const userAuth = async (
       };
     bearerToken = bearerToken.split(' ')[1];
 
-    const { user }: any = await jwt.verify(bearerToken, jwtSecret);
-    res.locals.user = user;
+    const decodedToken: any = jwt.verify(bearerToken, jwtSecret);
+    console.log('Decoded token:', decodedToken); 
+    res.locals.user = decodedToken ; 
+    
     res.locals.token = bearerToken;
     next();
   } catch (error) {

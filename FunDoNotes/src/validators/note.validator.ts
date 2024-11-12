@@ -4,8 +4,9 @@ import Joi from '@hapi/joi';
 class NoteValidator {
   private noteSchema = Joi.object({
     title: Joi.string().required(),
-    description: Joi.string().optional(),
-    color: Joi.string().optional()
+    description: Joi.string().required(),
+    color: Joi.string().optional(),
+    createdBy: Joi.string().required()
   });
 
   public validateNote = (req: Request, res: Response, next: NextFunction): void => {

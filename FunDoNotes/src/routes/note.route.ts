@@ -28,7 +28,10 @@ class noteRoutes {
 
        // Route to toggle archive/unarchive
    this.router.put('/archive/:id', userAuth, this.NoteController.ArchiveNote);
-   
+
+      // Route to toggle trash/restore
+   this.router.put('/trash/:id', userAuth, this.NoteController.TrashNote);
+
   };
 
   public getRoutes = (): IRouter => {

@@ -32,6 +32,16 @@ class NoteService {
         return note;
       }
 
+        // Toggle trash status
+  public async toggleTrash(noteId: string, userId: string): Promise<INote | null> {
+    const note = await NoteModel.findOne({ _id: noteId, createdBy: userId });
+    if (note) {
+      note.isTrash = !note.isTrash;
+      await note.save();
+    }
+    return note;
+  }
+
 }
 
 export default NoteService;

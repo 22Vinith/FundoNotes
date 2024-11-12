@@ -23,6 +23,9 @@ class noteRoutes {
  // Route to get a note by its ID
  this.router.get('/:id', userAuth, this.NoteController.getNoteById);
 
+    // Route to update a note
+    this.router.put('/update/:id', userAuth, this.NoteValidator.validateNote, this.NoteController.updateNote);
+
   };
 
   public getRoutes = (): IRouter => {

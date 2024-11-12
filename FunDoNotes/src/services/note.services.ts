@@ -22,6 +22,16 @@ class NoteService {
     return await NoteModel.findOneAndUpdate({ _id: noteId, createdBy: userId }, noteData, { new: true });
   }
 
+    // Toggle archive status
+    public async toggleArchive(noteId: string, userId: string): Promise<INote | null> {
+        const note = await NoteModel.findOne({ _id: noteId, createdBy: userId });
+        if (note) {
+          note.isArchive = !note.isArchive;
+          await note.save();
+        }
+        return note;
+      }
+
 }
 
 export default NoteService;

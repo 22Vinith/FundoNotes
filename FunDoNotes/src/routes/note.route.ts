@@ -26,6 +26,9 @@ class noteRoutes {
     // Route to update a note
     this.router.put('/update/:id', userAuth, this.NoteValidator.validateNote, this.NoteController.updateNote);
 
+       // Route to toggle archive/unarchive
+   this.router.put('/archive/:id', userAuth, this.NoteController.ArchiveNote);
+   
   };
 
   public getRoutes = (): IRouter => {

@@ -52,6 +52,17 @@ class NoteController {
     }
   };
 
+    // Toggle archive status
+    public ArchiveNote = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const UserId= res.locals.user.userId;
+          const archivedNote = await this.noteService.toggleArchive(req.params.id, UserId);
+          res.status(200).json(archivedNote);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      };
+
 }
 
 export default NoteController;

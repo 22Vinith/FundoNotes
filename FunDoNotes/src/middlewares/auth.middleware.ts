@@ -22,6 +22,7 @@ export const userAuth = async (
 : Promise<void> => {
   try {
     let bearerToken = req.header('Authorization');
+    console.log("bearerToken"+ bearerToken);
     if (!bearerToken)
       throw {
         code: HttpStatus.BAD_REQUEST,
@@ -30,10 +31,10 @@ export const userAuth = async (
     bearerToken = bearerToken.split(' ')[1];
 
     const decodedToken: any = jwt.verify(bearerToken, jwtSecret);
-    console.log('Decoded token:', decodedToken); 
-    res.locals.user = decodedToken ; 
-    
-    res.locals.token = bearerToken;
+    console.log('Decoded token:', decodedToken.userId); 
+
+    req.body.createdBy=decodedToken.userId
+    console.log("req.body contains "+ req.body.createdBy)
     next();
   } catch (error) {
     next(error);

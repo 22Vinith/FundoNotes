@@ -13,6 +13,9 @@ class UserController {
    * @param {object} res - Response object
    * @param {Function} next - Next function to handle errors
    */
+
+  //----------------------------------------------------------------------------------------------------
+  //Register user
     public registerUser = async (
       req: Request,
       res: Response,
@@ -32,7 +35,7 @@ class UserController {
         // Pass any error to the next middleware for centralized error handling
         next(error);
       }
-    };
+     };
 
 
 //---------------------------------------------------------------------------------------------------
@@ -49,9 +52,9 @@ class UserController {
     } catch (error) {
       res.status(HttpStatus.UNAUTHORIZED).send(error.message);
     }
-};
+    };
 
-//-------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 
 }
 

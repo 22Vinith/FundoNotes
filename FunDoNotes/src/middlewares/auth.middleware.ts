@@ -12,13 +12,12 @@ import { Request, Response, NextFunction } from 'express';
  * @param {Function} next
  */
 
-const jwtSecret = process.env.JWT_SECRET;
-
-export const userAuth = async (
+const userAuth = (jwtSecret:string)=>{ 
+  return async (
   req: Request,
   res: Response,
-  next: NextFunction
-): Promise<void> => {
+  next: NextFunction)
+: Promise<void> => {
   try {
     let bearerToken = req.header('Authorization');
     if (!bearerToken)
@@ -27,12 +26,17 @@ export const userAuth = async (
         message: 'Authorization token is required'
       };
     bearerToken = bearerToken.split(' ')[1];
-
-    const { user }: any = await jwt.verify(bearerToken, jwtSecret);
-    res.locals.user = user;
-    res.locals.token = bearerToken;
+    const decodedToken: any = jwt.verify(bearerToken, jwtSecret); 
+    req.body.createdBy=decodedToken.userId
+   
     next();
   } catch (error) {
     next(error);
   }
 };
+}
+
+export const Auth =userAuth(process.env.JWT_SECRET);
+
+export const passwordResetAuth =userAuth(process.env.JWT_SECRETF);
+

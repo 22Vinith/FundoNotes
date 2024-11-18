@@ -16,7 +16,7 @@ class NoteValidator {
     } else {
       next();
     }
-   };
-   }
+    };
+}
 
 export default NoteValidator;

@@ -1,97 +1,153 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import noteService from '../services/note.services';
-import { userAuth } from '../middlewares/auth.middleware';
+import HttpStatus from 'http-status-codes';
+
 
 
 class NoteController {
-  private noteService = new noteService();
-//----------------------------------------------------------------------------------------------------
+    private noteService = new noteService();
+
     // Create a new note
-    public createNote = async (req: Request, res: Response): Promise<void> => {
+    public createNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-        console.log("controller userId contains"+UserId)
-      const note = await this.noteService.createNote(req.body, UserId );
-      res.status(201).json(note);
+      const userId = req.body.createdBy;
+      console.log("Controller userId contains " + userId);
+      const data = await this.noteService.createNote(req.body, userId);
+      res.status(HttpStatus.CREATED).json({
+        code: HttpStatus.CREATED,
+        data: data,
+        message: "Note created successfully"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
+  
 
-//----------------------------------------------------------------------------------------------------
+
     // Get all notes
-    public getAllNotes = async (req: Request, res: Response): Promise<void> => {
+    public getAllNotes = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-       
-      const notes = await this.noteService.getAllNotes(UserId);
-      res.status(200).json(notes);
+      const userId = req.body.createdBy;
+      const data = await this.noteService.getAllNotes(userId);
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: data,
+        message: "All notes fetched successfully"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
 
-//----------------------------------------------------------------------------------------------------
+
     // Get a single note by ID
-    public getNoteById = async (req: Request, res: Response): Promise<void> => {
+    public getNoteById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-      const note = await this.noteService.getNoteById(req.params.id, UserId );
-      res.status(200).json(note);
+      const userId = req.body.createdBy;
+      const data = await this.noteService.getNoteById(req.params.id, userId);
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: data,
+        message: "Note fetched successfully"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
 
-//----------------------------------------------------------------------------------------------------
+
     // Update a note
-    public updateNote = async (req: Request, res: Response): Promise<void> => {
+    public updateNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-      const updatedNote = await this.noteService.updateNote(req.params.id, req.body, UserId);
-      res.status(200).json(updatedNote);
+      const userId = req.body.createdBy;
+      const data = await this.noteService.updateNote(req.params.id, req.body, userId);
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: data,
+        message: "Note updated successfully"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
 
-//----------------------------------------------------------------------------------------------------
+
     // Toggle archive status
-    public ArchiveNote = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const UserId= req.body.createdBy;
-          const archivedNote = await this.noteService.toggleArchive(req.params.id, UserId);
-          res.status(200).json(archivedNote);
-        } catch (error) {
-          res.status(500).json({ error: error.message });
-        }
+    public ArchiveNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
+    try {
+      const userId = req.body.createdBy;
+      const data = await this.noteService.toggleArchive(req.params.id, userId);
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: data,
+        message: "Note archive status toggled successfully"
+      });
+    } catch (error) {
+      next(error); 
+    }
     };
 
-//----------------------------------------------------------------------------------------------------
+
     // Toggle trash status
-    public TrashNote = async (req: Request, res: Response): Promise<void> => {
+    public TrashNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-      const trashedNote = await this.noteService.toggleTrash(req.params.id, UserId);
-      res.status(200).json(trashedNote);
+      const userId = req.body.createdBy;
+      const data = await this.noteService.toggleTrash(req.params.id, userId);
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: data,
+        message: "Note trash status toggled successfully"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
 
-//----------------------------------------------------------------------------------------------------
+
     // Permanently delete a note
-    public deleteNoteForever = async (req: Request, res: Response): Promise<void> => {
+    public deleteNoteForever = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ): Promise<any> => {
     try {
-        const UserId= req.body.createdBy;
-      await this.noteService.deleteNoteForever(req.params.id, UserId);
-      res.status(204).json({message: "deleted permanently"});
+      const userId = req.body.createdBy;
+      await this.noteService.deleteNoteForever(req.params.id, userId);
+      res.status(HttpStatus.NO_CONTENT).json({
+        code: HttpStatus.NO_CONTENT,
+        message: "Note deleted permanently"
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error); 
     }
     };
 
-//----------------------------------------------------------------------------------------------------
+
 }
 
 export default NoteController;

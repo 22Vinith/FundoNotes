@@ -12,33 +12,31 @@ import { Request, Response, NextFunction } from 'express';
  * @param {Function} next
  */
 
-const jwtSecret = process.env.JWT_SECRET;
-
-
-export const userAuth = async (
+const userAuth = (jwtSecret:string)=>{ 
+  return async (
   req: Request,
   res: Response,
   next: NextFunction)
 : Promise<void> => {
   try {
     let bearerToken = req.header('Authorization');
-    console.log("bearerToken"+ bearerToken);
     if (!bearerToken)
       throw {
         code: HttpStatus.BAD_REQUEST,
         message: 'Authorization token is required'
       };
     bearerToken = bearerToken.split(' ')[1];
-
-    const decodedToken: any = jwt.verify(bearerToken, jwtSecret);
-    console.log('Decoded token:', decodedToken.userId); 
-
+    const decodedToken: any = jwt.verify(bearerToken, jwtSecret); 
     req.body.createdBy=decodedToken.userId
-    console.log("req.body contains "+ req.body.createdBy)
+   
     next();
   } catch (error) {
     next(error);
   }
 };
+}
 
+export const Auth =userAuth(process.env.JWT_SECRET);
+
+export const passwordResetAuth =userAuth(process.env.JWT_SECRETF);
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import noteService from '../services/note.services';
 import HttpStatus from 'http-status-codes';
+import { http } from 'winston';
 
 
 
@@ -23,7 +24,7 @@ class NoteController {
         message: "Note created successfully"
       });
     } catch (error) {
-      next(error); 
+      next(error);
     }
     };
   

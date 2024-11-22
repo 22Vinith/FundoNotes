@@ -34,18 +34,15 @@ class UserService {
   public loginUser = async (body: { email: string; password: string }): Promise<any> => {
   const { email, password } = body;
   // Check if user exists
-  const user = await User.findOne({email} );//Internally the return is made, If a matching user is found, User.findOne "returns an object with that user’s data".
-  if (!user) {  //This is entered only if the above is false    
-    throw new Error('User not registered');
+  const user = await User.findOne({email} );
+  if (!user) {  
+    throw new Error("Invalid email");
   }
   // Correct password verification using bcrypt(Authentication)
-    const isPasswordValid = await bcrypt.compare(password, user.password);// Even this has the return stmt internally for true, the "user" in the user.password is the one which is mentioned while retreving the email which return the entire object of that matched email.
-    if (!isPasswordValid) { //Same here 
-      console.log("Incorrect password");
-      throw new Error('Invalid email or password');
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) { 
+      throw new Error('Invalid password');
   }
-
-
   // Generate a JWT token
   const token = jwt.sign( { userId: user._id, email: user.email },this.jwtSecret,{ expiresIn: '1h' } );
   return { message: 'Login successful', token };

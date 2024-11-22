@@ -6,6 +6,8 @@ class NoteValidator {
     title: Joi.string().required(),
     description: Joi.string().required(),
     color: Joi.string().optional(),
+    isArchive: Joi.boolean().optional(),
+    isTrash: Joi.boolean().optional(),
     createdBy: Joi.string().required()
   });
 

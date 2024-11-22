@@ -28,10 +28,9 @@ const userAuth = (jwtSecret:string)=>{
     bearerToken = bearerToken.split(' ')[1];
     const decodedToken: any = jwt.verify(bearerToken, jwtSecret); 
     req.body.createdBy=decodedToken.userId
-   
     next();
   } catch (error) {
-    next(error);
+     res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid or expired token' });
   }
 };
 }

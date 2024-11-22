@@ -4,6 +4,7 @@ import UserService from '../services/user.service';
 import { sendEmail } from '../utils/user.util';
 import { Request, Response, NextFunction } from 'express';
 
+
 class UserController {
   public userService = new UserService();
 
@@ -44,7 +45,7 @@ class UserController {
         message: 'Login successful'
       });
     } catch (error) {
-      res.status(HttpStatus.UNAUTHORIZED).send(error.message);
+      next(error);
     }
     };
 
@@ -54,10 +55,8 @@ class UserController {
     try {
       const { email } = req.body;
       const token = await this.userService.forgetPassword(email);
-  
       // Sending token via email
       await sendEmail(email, token);
-  
       res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       message: 'Reset token sent to email successfully',

@@ -1,154 +1,177 @@
 import { Request, Response, NextFunction } from 'express';
 import noteService from '../services/note.services';
 import HttpStatus from 'http-status-codes';
-import { http } from 'winston';
-
-
+import { INote } from '../interfaces/note.interface';
+import { redisClient } from '../config/redis';
 
 class NoteController {
-    private noteService = new noteService();
+  private noteService = new noteService();
 
-    // Create a new note
-    public createNote = async (
+  // Create a new note
+  public createNote = async (
     req: Request,
     res: Response,
     next: NextFunction
-    ): Promise<any> => {
+  ): Promise<INote> => {
     try {
       const userId = req.body.createdBy;
-      console.log("Controller userId contains " + userId);
       const data = await this.noteService.createNote(req.body, userId);
+
       res.status(HttpStatus.CREATED).json({
         code: HttpStatus.CREATED,
         data: data,
-        message: "Note created successfully"
+        message: 'Note created successfully'
       });
+      return data;
     } catch (error) {
       next(error);
     }
-    };
-  
+  };
+
+  // Controller to get all notes for a user
+  public getAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.body.createdBy; // Extract the user ID from the request body
+    // Check if notes are cached in Redis
+    const cachedNotes = await redisClient.get(`notes:${userId}`);
+    if (cachedNotes) {
+      res.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: JSON.parse(cachedNotes),
+        message: 'Notes fetched successfully from cache'
+      });
+    }
+    // Fetch notes from the database
+    const data = await this.noteService.getAllNotes(userId);
+    if (data.length === 0) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        code: HttpStatus.NOT_FOUND,
+        message: 'No notes present for the user'
+      });
+    }
+    // Cache the fetched notes in Redis for 1 hour
+    await redisClient.setEx(`notes:${userId}`, 3600, JSON.stringify(data));
+
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data,
+      message: 'Notes fetched successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+  };
 
 
-    // Get all notes
-    public getAllNotes = async (
+ // Controller to get a note by its ID
+ public getNoteById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const noteId = req.params.id;
+    const userId = req.body.createdBy; 
+
+    const data = await this.noteService.getNoteById(noteId, userId);
+    if (!data) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        code: HttpStatus.NOT_FOUND,
+        message: 'Note not found'
+      });
+      return;
+    }
+
+    await redisClient.setEx(`note:${userId}:${noteId}`, 3600, JSON.stringify(data)); 
+    
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data,
+      message: 'Note fetched successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+  // Update a note
+  public updateNote = async (
     req: Request,
     res: Response,
     next: NextFunction
-    ): Promise<any> => {
+  ): Promise<INote> => {
     try {
       const userId = req.body.createdBy;
-      const data = await this.noteService.getAllNotes(userId);
+      const data = await this.noteService.updateNote(
+        req.params.id,
+        req.body,
+        userId
+      );
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: data,
-        message: "All notes fetched successfully"
+        message: 'Note updated successfully'
       });
+      return data;
     } catch (error) {
-      next(error); 
+      next(error);
     }
-    };
+  };
 
-
-    // Get a single note by ID
-    public getNoteById = async (
+  // Toggle archive status
+  public ArchiveNote = async (
     req: Request,
     res: Response,
     next: NextFunction
-    ): Promise<any> => {
-    try {
-      const userId = req.body.createdBy;
-      const data = await this.noteService.getNoteById(req.params.id, userId);
-      res.status(HttpStatus.OK).json({
-        code: HttpStatus.OK,
-        data: data,
-        message: "Note fetched successfully"
-      });
-    } catch (error) {
-      next(error); 
-    }
-    };
-
-
-    // Update a note
-    public updateNote = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-    ): Promise<any> => {
-    try {
-      const userId = req.body.createdBy;
-      const data = await this.noteService.updateNote(req.params.id, req.body, userId);
-      res.status(HttpStatus.OK).json({
-        code: HttpStatus.OK,
-        data: data,
-        message: "Note updated successfully"
-      });
-    } catch (error) {
-      next(error); 
-    }
-    };
-
-
-    // Toggle archive status
-    public ArchiveNote = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-    ): Promise<any> => {
+  ): Promise<INote> => {
     try {
       const userId = req.body.createdBy;
       const data = await this.noteService.toggleArchive(req.params.id, userId);
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: data,
-        message: "Note archive status toggled successfully"
+        message: 'Note archive status toggled successfully'
       });
+      return data;
     } catch (error) {
-      next(error); 
+      next(error);
     }
-    };
+  };
 
-
-    // Toggle trash status
-    public TrashNote = async (
+  // Toggle trash status
+  public TrashNote = async (
     req: Request,
     res: Response,
     next: NextFunction
-    ): Promise<any> => {
+  ): Promise<INote> => {
     try {
       const userId = req.body.createdBy;
       const data = await this.noteService.toggleTrash(req.params.id, userId);
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         data: data,
-        message: "Note trash status toggled successfully"
+        message: 'Note trash status toggled successfully'
       });
+      return data;
     } catch (error) {
-      next(error); 
+      next(error);
     }
-    };
+  };
 
-
-    // Permanently delete a note
-    public deleteNoteForever = async (
+  // Permanently delete a note
+  public deleteNoteForever = async (
     req: Request,
     res: Response,
     next: NextFunction
-    ): Promise<any> => {
+  ): Promise<null> => {
     try {
       const userId = req.body.createdBy;
       await this.noteService.deleteNoteForever(req.params.id, userId);
       res.status(HttpStatus.NO_CONTENT).json({
         code: HttpStatus.NO_CONTENT,
-        message: "Note deleted permanently"
+        message: 'Note deleted permanently'
       });
+      return null;
     } catch (error) {
-      next(error); 
+      next(error);
     }
-    };
-
-
+  };
 }
 
 export default NoteController;

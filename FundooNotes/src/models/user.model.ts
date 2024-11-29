@@ -3,16 +3,16 @@ import { IUser } from '../interfaces/user.interface';
 
 const userSchema = new Schema(
   {
-    firstname:{
-      type:String
+    firstname: {
+      type: String
     },
-    lastname:{
-      type:String
+    lastname: {
+      type: String
     },
     email: {
       type: String
     },
-   
+
     password: {
       type: String
     }
@@ -23,5 +23,3 @@ const userSchema = new Schema(
 );
 
 export default model<IUser>('User', userSchema);
-
-

@@ -12,30 +12,31 @@ import { Request, Response, NextFunction } from 'express';
  * @param {Function} next
  */
 
-const userAuth = (jwtSecret:string)=>{ 
+const userAuth = (jwtSecret: string) => {
   return async (
-  req: Request,
-  res: Response,
-  next: NextFunction)
-: Promise<void> => {
-  try {
-    let bearerToken = req.header('Authorization');
-    if (!bearerToken)
-      throw {
-        code: HttpStatus.BAD_REQUEST,
-        message: 'Authorization token is required'
-      };
-    bearerToken = bearerToken.split(' ')[1];
-    const decodedToken: any = jwt.verify(bearerToken, jwtSecret); 
-    req.body.createdBy=decodedToken.userId
-    next();
-  } catch (error) {
-     res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid or expired token' });
-  }
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      let bearerToken = req.header('Authorization');
+      if (!bearerToken)
+        throw {
+          code: HttpStatus.BAD_REQUEST,
+          message: 'Authorization token is required'
+        };
+      bearerToken = bearerToken.split(' ')[1];
+      const decodedToken: any = jwt.verify(bearerToken, jwtSecret);
+      req.body.createdBy = decodedToken.userId;
+      next();
+    } catch (error) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: 'Invalid or expired token' });
+    }
+  };
 };
-}
 
-export const Auth =userAuth(process.env.JWT_SECRET);
+export const Auth = userAuth(process.env.JWT_SECRET);
 
-export const passwordResetAuth =userAuth(process.env.JWT_SECRETF);
-
+export const passwordResetAuth = userAuth(process.env.JWT_SECRETF);

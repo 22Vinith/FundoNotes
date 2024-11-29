@@ -1,6 +1,7 @@
 import HttpStatus from 'http-status-codes';
 import Logger from '../config/logger';
 import { Request, Response, NextFunction } from 'express';
+import { CustomError } from '../utils/utils.customError';
 
 class ErrorMiddleware {
   private logger;
@@ -33,7 +34,7 @@ class ErrorMiddleware {
    */
   // eslint-disable-next-line no-unused-vars
   public appErrorHandler = (
-    err: any,
+    err: CustomError,
     req: Request,
     res: Response,
     next: NextFunction
@@ -65,10 +66,9 @@ class ErrorMiddleware {
    */
   // eslint-disable-next-line no-unused-vars
   public genericErrorHandler = (
-    err: any,
+    err: CustomError,
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): void => {
     this.logger.error(`
     status - ${HttpStatus.INTERNAL_SERVER_ERROR} 

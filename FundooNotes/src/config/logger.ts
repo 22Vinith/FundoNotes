@@ -38,7 +38,7 @@ class Logger {
      *
      * @param {any} message
      */
-    write(message) {
+    write(message: string): void {
       /**
        * morganLogger logs all http request in a dedicated file and on console
        */

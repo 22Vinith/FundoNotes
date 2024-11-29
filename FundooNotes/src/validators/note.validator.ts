@@ -11,14 +11,18 @@ class NoteValidator {
     createdBy: Joi.string().required()
   });
 
-  public validateNote = (req: Request, res: Response, next: NextFunction): void => {
+  public validateNote = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void => {
     const { error } = this.noteSchema.validate(req.body);
     if (error) {
       res.status(400).json({ error: error.details[0].message });
     } else {
       next();
     }
-    };
+  };
 }
 
 export default NoteValidator;

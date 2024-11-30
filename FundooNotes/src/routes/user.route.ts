@@ -20,7 +20,7 @@ class UserRoutes {
       this.UserController.registerUser
     );
 
-    // route to create a new user
+    // route to login
     this.router.post(
       '/login',
       this.UserValidator.loginvalidator,

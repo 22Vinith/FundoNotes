@@ -28,38 +28,27 @@ class NoteController {
     }
   };
 
-  // Controller to get all notes for a user
-  public getAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const userId = req.body.createdBy; // Extract the user ID from the request body
-    // Check if notes are cached in Redis
-    const cachedNotes = await redisClient.get(`notes:${userId}`);
-    if (cachedNotes) {
+   // Controller to get all notes for a user
+   public getAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.body.createdBy;
+      const data = await this.noteService.getAllNotes(userId);
+      if (data.length === 0) {  
+        res.status(HttpStatus.NOT_FOUND).json({
+          code: HttpStatus.NOT_FOUND,
+          message: 'No notes present for the user'
+        });
+      }
+      await redisClient.setEx(`notes:${userId}`, 3600, JSON.stringify(data)); 
+      
       res.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
-        data: JSON.parse(cachedNotes),
-        message: 'Notes fetched successfully from cache'
+        data,
+        message: 'Notes fetched successfully'
       });
+    } catch (error) {
+      next(error);
     }
-    // Fetch notes from the database
-    const data = await this.noteService.getAllNotes(userId);
-    if (data.length === 0) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        code: HttpStatus.NOT_FOUND,
-        message: 'No notes present for the user'
-      });
-    }
-    // Cache the fetched notes in Redis for 1 hour
-    await redisClient.setEx(`notes:${userId}`, 3600, JSON.stringify(data));
-
-    res.status(HttpStatus.OK).json({
-      code: HttpStatus.OK,
-      data,
-      message: 'Notes fetched successfully'
-    });
-  } catch (error) {
-    next(error);
-  }
   };
 
 
@@ -77,7 +66,6 @@ class NoteController {
       });
       return;
     }
-
     await redisClient.setEx(`note:${userId}:${noteId}`, 3600, JSON.stringify(data)); 
     
     res.status(HttpStatus.OK).json({

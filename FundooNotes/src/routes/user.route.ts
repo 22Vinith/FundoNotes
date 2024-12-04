@@ -14,33 +14,16 @@ class UserRoutes {
 
   private routes = () => {
     //route to create a new user
-    this.router.post(
-      '',
-      this.UserValidator.registervalidator,
-      this.UserController.registerUser
-    );
+    this.router.post('', this.UserValidator.registervalidator, this.UserController.registerUser);
 
     // route to login
-    this.router.post(
-      '/login',
-      this.UserValidator.loginvalidator,
-      this.UserController.loginUser
-    );
+    this.router.post('/login', this.UserValidator.loginvalidator, this.UserController.loginUser);
 
     //route to implement forgot password
-    this.router.post(
-      '/forgot-password',
-      this.UserValidator.emailValidator,
-      this.UserController.forgetPassword
-    );
+    this.router.post('/forgot-password', this.UserValidator.emailValidator, this.UserController.forgetPassword);
 
     //route to implement reset password
-    this.router.put(
-      '/reset-password',
-      this.UserValidator.resetPasswordValidator,
-      passwordResetAuth,
-      this.UserController.resetPassword
-    );
+    this.router.put('/reset-password', this.UserValidator.resetPasswordValidator, passwordResetAuth, this.UserController.resetPassword);
   };
 
   public getRoutes = (): IRouter => {

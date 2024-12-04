@@ -13,11 +13,7 @@ import { Request, Response, NextFunction } from 'express';
  */
 
 const userAuth = (jwtSecret: string) => {
-  return async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       let bearerToken = req.header('Authorization');
       if (!bearerToken)
@@ -30,9 +26,7 @@ const userAuth = (jwtSecret: string) => {
       req.body.createdBy = decodedToken.userId;
       next();
     } catch (error) {
-      res
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: 'Invalid or expired token' });
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid or expired token' });
     }
   };
 };

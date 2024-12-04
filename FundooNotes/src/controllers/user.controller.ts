@@ -3,6 +3,7 @@ import HttpStatus from 'http-status-codes';
 import UserService from '../services/user.service';
 import { sendEmail } from '../utils/user.util';
 import { Request, Response, NextFunction } from 'express';
+import { publishMessage } from '../utils/rabbitmq.utils';
 
 class UserController {
   public userService = new UserService();
@@ -15,13 +16,15 @@ class UserController {
    */
 
   //Register user
-  public registerUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  public registerUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const newUser = await this.userService.registerUser(req.body);
+      if (newUser && newUser._id) {
+        //send the new user data to the RabbitMQ Queue = userQueue
+        publishMessage('user-queue', { userId: newUser._id, action: 'Register Successfully.....' });
+      } else {
+        console.error('user ID not found in response Data');
+      }
       res.status(HttpStatus.CREATED).json({
         code: HttpStatus.CREATED,
         data: newUser,
@@ -33,11 +36,7 @@ class UserController {
   };
 
   // Log in user
-  public loginUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  public loginUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const user = await this.userService.loginUser(req.body);
       return res.status(HttpStatus.OK).json({
@@ -51,11 +50,7 @@ class UserController {
   };
 
   // Forget password
-  public forgetPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  public forgetPassword = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { email } = req.body;
       const token = await this.userService.forgetPassword(email);
@@ -71,11 +66,7 @@ class UserController {
   };
 
   // Reset password
-  public resetPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<any> => {
+  public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       await this.userService.resetPassword(req.body);
       res.status(HttpStatus.OK).json({

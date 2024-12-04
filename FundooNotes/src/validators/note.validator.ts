@@ -1,24 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi from '@hapi/joi';
+import { body, validationResult } from 'express-validator';
 
 class NoteValidator {
-  private noteSchema = Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().required(),
-    color: Joi.string().optional(),
-    isArchive: Joi.boolean().optional(),
-    isTrash: Joi.boolean().optional(),
-    createdBy: Joi.string().required()
-  });
+  // Define the validation rules
+  public validateNote = [
+    body('title').isString().notEmpty().withMessage('Title is required'),
+    body('description').isString().notEmpty().withMessage('Description is required'),
+    body('color').optional().isString().withMessage('Color must be a string'),
+    body('isArchive').optional().isBoolean().withMessage('isArchive must be a boolean'),
+    body('isTrash').optional().isBoolean().withMessage('isTrash must be a boolean'),
+    body('createdBy').isString().notEmpty().withMessage('CreatedBy is required'),
 
-  public validateNote = (req: Request, res: Response, next: NextFunction): void => {
-    const { error } = this.noteSchema.validate(req.body);
-    if (error) {
-      res.status(400).json({ error: error.details[0].message });
-    } else {
+    // Middleware to check for validation errors
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
       next();
-    }
-  };
+    },
+  ];
 }
 
 export default NoteValidator;

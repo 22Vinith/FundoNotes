@@ -54,7 +54,7 @@ describe('User APIs Test', () => {
 
     it('should return an error if required fields are missing', async () => {
       const res = await request(app.getApp()).post('/api/v1/users').send({ email: 'test@gmail.com' });
-      expect(res.status).to.equal(500);
+      expect(res.status).to.equal(400);
     });
   });
 

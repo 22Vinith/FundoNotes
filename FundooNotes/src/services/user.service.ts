@@ -1,9 +1,5 @@
 import User from '../models/user.model';
-import {
-  IUser,
-  IUserResponse,
-  ResetPasswordBody
-} from '../interfaces/user.interface';
+import { IUser, IUserResponse, ResetPasswordBody } from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
@@ -30,10 +26,7 @@ class UserService {
   };
 
   // Log in user
-  public loginUser = async (body: {
-    email: string;
-    password: string;
-  }): Promise<IUserResponse> => {
+  public loginUser = async (body: { email: string; password: string }): Promise<IUserResponse> => {
     const { email, password } = body;
     // Check if user exists
     const user = await User.findOne({ email });
@@ -46,11 +39,7 @@ class UserService {
       throw new Error('Invalid password');
     }
     // Generate a JWT token
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      this.jwtSecret,
-      { expiresIn: '1h' }
-    );
+    const token = jwt.sign({ userId: user._id, email: user.email }, this.jwtSecret, { expiresIn: '1h' });
     return { message: 'Login successful', token };
   };
 
@@ -60,10 +49,7 @@ class UserService {
     if (!user) {
       throw new Error('User not found');
     }
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRETF as string
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRETF as string);
     return token;
   };
 

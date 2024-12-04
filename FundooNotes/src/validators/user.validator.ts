@@ -3,11 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 class UserValidator {
   // Register validator
-  public registervalidator = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void => {
+  public registervalidator = (req: Request, res: Response, next: NextFunction): void => {
     const schema = Joi.object({
       firstname: Joi.string().min(2).max(30).required(),
       lastname: Joi.string().min(2).max(30).required(),
@@ -22,11 +18,7 @@ class UserValidator {
   };
 
   // Login validator
-  public loginvalidator = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void => {
+  public loginvalidator = (req: Request, res: Response, next: NextFunction): void => {
     const schema = Joi.object({
       email: Joi.string().email().required(),
       password: Joi.string().min(8).required()
@@ -39,11 +31,7 @@ class UserValidator {
   };
 
   // Validate email for forget password
-  public emailValidator = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void | Response => {
+  public emailValidator = (req: Request, res: Response, next: NextFunction): void | Response => {
     const schema = Joi.object({
       email: Joi.string().email().required()
     });
@@ -58,11 +46,7 @@ class UserValidator {
   };
 
   // Validate reset password request (token and new password)
-  public resetPasswordValidator = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void | Response => {
+  public resetPasswordValidator = (req: Request, res: Response, next: NextFunction): void | Response => {
     const schema = Joi.object({
       newPassword: Joi.string().min(6).required()
     });

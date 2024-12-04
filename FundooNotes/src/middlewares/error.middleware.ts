@@ -33,12 +33,7 @@ class ErrorMiddleware {
    * @param  {Function} next
    */
   // eslint-disable-next-line no-unused-vars
-  public appErrorHandler = (
-    err: CustomError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void => {
+  public appErrorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction): void => {
     if (err.code && typeof err.code === 'number') {
       this.logger.error(`
       status - ${err.code}
@@ -65,11 +60,7 @@ class ErrorMiddleware {
    * @param  {Function} next
    */
   // eslint-disable-next-line no-unused-vars
-  public genericErrorHandler = (
-    err: CustomError,
-    req: Request,
-    res: Response
-  ): void => {
+  public genericErrorHandler = (err: CustomError, req: Request, res: Response): void => {
     this.logger.error(`
     status - ${HttpStatus.INTERNAL_SERVER_ERROR} 
     message - ${err.stack} 

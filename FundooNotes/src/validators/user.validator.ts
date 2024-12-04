@@ -1,64 +1,63 @@
-import Joi from '@hapi/joi';
+import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 class UserValidator {
-  // Register validator
-  public registervalidator = (req: Request, res: Response, next: NextFunction): void => {
-    const schema = Joi.object({
-      firstname: Joi.string().min(2).max(30).required(),
-      lastname: Joi.string().min(2).max(30).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required()
-    });
-    const { error } = schema.validate(req.body);
-    if (error) {
-      next(error);
-    }
-    next();
-  };
+  // Register validation rules
+  public registerValidator = [
+    body('firstname').isString().isLength({ min: 2, max: 30 }).withMessage('Firstname must be between 2 and 30 characters'),
+    body('lastname').isString().isLength({ min: 2, max: 30 }).withMessage('Lastname must be between 2 and 30 characters'),
+    body('email').isEmail().withMessage('Invalid email format'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
 
-  // Login validator
-  public loginvalidator = (req: Request, res: Response, next: NextFunction): void => {
-    const schema = Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required()
-    });
-    const { error } = schema.validate(req.body);
-    if (error) {
-      next(error);
-    }
-    next();
-  };
+    // Error handling middleware
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ];
+
+  // Login validation rules
+  public loginValidator = [
+    body('email').isEmail().withMessage('Invalid email format'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ];
 
   // Validate email for forget password
-  public emailValidator = (req: Request, res: Response, next: NextFunction): void | Response => {
-    const schema = Joi.object({
-      email: Joi.string().email().required()
-    });
+  public emailValidator = [
+    body('email').isEmail().withMessage('Invalid email format'),
 
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        error: error.details[0].message
-      });
-    }
-    next();
-  };
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ];
 
-  // Validate reset password request (token and new password)
-  public resetPasswordValidator = (req: Request, res: Response, next: NextFunction): void | Response => {
-    const schema = Joi.object({
-      newPassword: Joi.string().min(6).required()
-    });
+  // Reset password validation rules
+  public resetPasswordValidator = [
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
 
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        error: error.details[0].message
-      });
-    }
-    next();
-  };
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ];
 }
 
 export default UserValidator;

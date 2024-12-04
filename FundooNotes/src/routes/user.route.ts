@@ -14,10 +14,10 @@ class UserRoutes {
 
   private routes = () => {
     //route to create a new user
-    this.router.post('', this.UserValidator.registervalidator, this.UserController.registerUser);
+    this.router.post('', this.UserValidator.registerValidator, this.UserController.registerUser);
 
     // route to login
-    this.router.post('/login', this.UserValidator.loginvalidator, this.UserController.loginUser);
+    this.router.post('/login', this.UserValidator.loginValidator, this.UserController.loginUser);
 
     //route to implement forgot password
     this.router.post('/forgot-password', this.UserValidator.emailValidator, this.UserController.forgetPassword);

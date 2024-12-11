@@ -7,10 +7,19 @@ class NoteService {
     return await NoteModel.create({ ...noteData, userId });
   }
 
-  // Get all notes
-  public async getAllNotes(userId: string): Promise<INote[]> {
-    return await NoteModel.find({ createdBy: userId });
-  }
+ // Get all paginated notes
+public async getAllNotes(userId: string, skip: number, limit: number): Promise<{ notes: INote[]; totalRecords: number }> {
+  // Fetch notes with skip and limit
+  const notes = await NoteModel.find({ createdBy: userId })
+    .skip(skip)
+    .limit(limit);
+
+  // Fetch the total count of notes
+  const totalRecords = await NoteModel.countDocuments({ createdBy: userId });
+  // Return notes and total record count
+  return { notes, totalRecords };
+}
+
 
   // Get note by ID
   public async getNoteById(noteId: string, userId: string): Promise<INote | null> {

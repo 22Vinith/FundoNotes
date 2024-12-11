@@ -25,28 +25,65 @@ class NoteController {
     }
   };
 
-  // Controller to get all notes for a user
-  public getAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = req.body.createdBy;
-      const data = await this.noteService.getAllNotes(userId);
-      if (data.length === 0) {
-        res.status(HttpStatus.NOT_FOUND).json({
-          code: HttpStatus.NOT_FOUND,
-          message: 'No notes present for the user'
-        });
-      }
-      await redisClient.setEx(`notes:${userId}`, 3600, JSON.stringify(data));
+// Controller to get all notes for a user with pagination
+public getAllNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.body.createdBy;
 
-      res.status(HttpStatus.OK).json({
-        code: HttpStatus.OK,
-        data,
-        message: 'Notes fetched successfully'
+    // Extract pagination parameters with defaults
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 3;
+
+    // Validate page and limit
+    if (page <= 0 || limit <= 0) {
+        res.status(HttpStatus.BAD_REQUEST).json({
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Page and limit must be positive integers.',
       });
-    } catch (error) {
-      next(error);
     }
-  };
+
+    // Calculate the skip value
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated notes and total count from the service
+    const { notes, totalRecords } = await this.noteService.getAllNotes(userId, skip, limit);
+
+    // If no notes are found, respond early
+    if (notes.length === 0) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        code: HttpStatus.NOT_FOUND,
+        message: 'No notes present for the user',
+      });
+    }
+
+    // Cache the results in Redis
+    try {
+      await redisClient.setEx(`notes:${userId}:page:${page}`, 3600, JSON.stringify(notes));
+    } catch (redisError) {
+      console.error('Redis caching error:', redisError);
+    }
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    // Respond with paginated data
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data: notes,
+      meta: {
+        page,
+        limit,
+        totalRecords,
+        totalPages,
+      },
+      message: 'Notes fetched successfully',
+    });
+  } catch (error) {
+    next(error); // Pass the error to the generic error handler
+  }
+};
+
+
 
   // Controller to get a note by its ID
   public getNoteById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
